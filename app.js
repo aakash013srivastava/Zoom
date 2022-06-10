@@ -3,6 +3,8 @@ const cookieParser = require("cookie-parser");
 const sessions = require('express-session');
 const bodyParser= require("body-parser")
 const fs = require('fs')
+var bcrypt = require('bcrypt');
+const saltRounds = 10;
 app = express()
 
 // parse application/x-www-form-urlencoded
@@ -23,11 +25,12 @@ app.use(sessions({
 }));
 
 app.get('/',(req,res)=>{
-    res.render("index.ejs")
+    
+    res.render("index.ejs",{user_id:req.session.user_id})
 })
 
 app.get('/register',(req,res)=>{
-    res.render("register.ejs")
+    res.render("register.ejs",{user_id:null})
 })
 
 app.post('/register',(req,res)=>{
@@ -50,8 +53,9 @@ app.post('/register',(req,res)=>{
 
         }
     })
-    if(flag){
-        fs.appendFile('users.txt',`email:${email},password:${password}\n`,(err,file)=>{
+    if(!flag){
+        const passwordHash = bcrypt.hashSync(password, 10);
+        fs.appendFile('users.txt',`email:${email},password:${passwordHash}\n`,(err,file)=>{
             if(err)
             res.send("User not Created")
             else
@@ -64,11 +68,11 @@ app.post('/register',(req,res)=>{
 
 
 app.get('/about',(req,res)=>{
-    res.render("about.ejs")
+    res.render("about.ejs",{user_id:req.session.user_id})
 })
 
 app.get('/login',(req,res)=>{
-    res.render('login.ejs')
+    res.render('login.ejs',{user_id:req.session.user_id})
 })
 
 
@@ -88,8 +92,8 @@ app.post('/login',(req,res)=>{
                     cur_email = cur_user.substring(6,cur_user.length);
                     const cur_pass = (user[1])
                     cur_password = cur_pass.substring(9,cur_pass.length);
-                    
-                    if(email == cur_email && password==cur_password){
+                    const verified = bcrypt.compareSync(password, cur_password);
+                    if(email == cur_email && verified){
                         
                         flag = true
                         console.log("found");
@@ -101,9 +105,9 @@ app.post('/login',(req,res)=>{
         }
     })
     if(!flag){
-        session = req.session
-        session.user_id=req.session.email
-        res.redirect('/')
+        req.session.user_id = email
+        console.log(req.session.user_id);
+        res.render('index.ejs',{user_id:email})
     }else{
 
         res.redirect("/register")

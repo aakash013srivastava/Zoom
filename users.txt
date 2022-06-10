@@ -1,2 +1,2 @@
-email:aakash013srivastava@gmail.com,password:aakash
-email:aakash1avp@yahoo.com,password:aakash
+email:aakash@mail.com,password:$2b$10$waXrRvTVFYvAzOYaFuBfc.1QJx3VbRTqW8aKGIFqXxINTeJsNF7mm
+email:aakash013srivastava@gmail.com,password:$2b$10$IRrND2EC6H5CZrLQ3gp5dekJ4r4NsYXNWW5amYeHXR3poDlj9IqEC
