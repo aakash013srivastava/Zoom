@@ -13,9 +13,14 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 app.use(cookieParser());
+// Set view engine as ejs
 app.set('view engine','ejs')
+
+// Set views directory as views
 app.set('views','./views')
 
+
+// Register sessions functionality
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(sessions({
     secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
@@ -33,10 +38,14 @@ app.get('/register',(req,res)=>{
     res.render("register.ejs",{user_id:null})
 })
 
+// Register a new user
+
 app.post('/register',(req,res)=>{
     const email = req.body.email
     const password = req.body.password
     let flag = false
+
+    // check if user not already present
     fs.readFile('users.txt','utf-8',(err,data)=>{
         if(data){
             const lines = data.split('\n')
@@ -53,8 +62,13 @@ app.post('/register',(req,res)=>{
 
         }
     })
+
+    // if user is not present in db
     if(!flag){
+        //create hash of user password
         const passwordHash = bcrypt.hashSync(password, 10);
+
+        // Add user to db
         fs.appendFile('users.txt',`email:${email},password:${passwordHash}\n`,(err,file)=>{
             if(err)
             res.send("User not Created")
@@ -80,10 +94,12 @@ app.post('/login',(req,res)=>{
     const email = req.body.email
     const password = req.body.password
     let flag = false
+
+    // check if user i  present in the user db
     fs.readFile('users.txt','utf-8',(err,data)=>{
         if(data){
             const lines = data.split('\n')
-            
+            // check if user present in users db line by line
             for(let x =0;x<lines.length;x++){
                 if(lines[x]){
                     
