@@ -3,9 +3,38 @@ const cookieParser = require("cookie-parser");
 const sessions = require('express-session');
 const bodyParser= require("body-parser")
 const fs = require('fs')
-var bcrypt = require('bcrypt');
+let bcrypt = require('bcrypt');
+let multer = require('multer');
+const { request } = require("http");
+
+let storage = multer.diskStorage({
+    destination:function(req,file,cb){
+        cb(null,'./static/uploads/')
+    },
+    filename:function(req,file,cb){
+        cb(null,Date.now()+file.originalname)
+    }
+})
+
+const fileFilter = (req,file,cb)=>{
+    if(file.mimetype==='image/jpeg'||file.mimetype==='image/jpg'||file.mimetype==='image/png'){
+        cb(null,true)
+    }else{
+        cb(null,false)
+    }
+}
+
+let upload = multer({
+    storage:storage,
+    fileFilter:fileFilter
+})
+
 const saltRounds = 10;
 app = express()
+
+
+
+
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -64,7 +93,7 @@ app.post('/register',(req,res)=>{
     })
 
     // if user is not present in db
-    if(!flag){
+    if(flag){
         //create hash of user password
         const passwordHash = bcrypt.hashSync(password, 10);
 
@@ -123,7 +152,7 @@ app.post('/login',(req,res)=>{
     if(!flag){
         req.session.user_id = email
         console.log(req.session.user_id);
-        res.render('index.ejs',{user_id:email})
+        res.render('index.ejs',{user_id:req.session.user_id})
     }else{
 
         res.redirect("/register")
@@ -134,6 +163,22 @@ app.post('/login',(req,res)=>{
 app.get('/logout',(req,res)=>{
     req.session.destroy()
     res.redirect("/")
+})
+
+
+app.get('/add_car',(req,res)=>{
+    res.render('add_car.ejs',{user_id:req.session.user_id})
+})
+
+
+app.post('/add_car',upload.single('filename'),(req,res,next)=>{
+    
+    if(request.file){
+        const pathname = req.file.path
+        res.send(req.file,pathName)
+    }
+    
+
 })
 
 
