@@ -24,17 +24,23 @@
               <li class="nav-item">
                 <a class="nav-link" href="/about">About</a>
               </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Register
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <% if(user_id){%>
-                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
+              <% if(user_id){%>
+              <li class="nav-item">
+                <a class="nav-link" href="/add_car">Add Car</a>
+              </li>
+              <%}%>
+              <% if(!user_id){%>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Register
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/register">Register</a></li>
+                    <li><a class="dropdown-item" href="/login">Login</a></li>
                     <%}else{%>
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="/register">Register</a></li>
-                  <li><a class="dropdown-item" href="/login">Login</a></li>
+                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
                   <%}%>
                 </ul>
               </li>
