@@ -1,0 +1,28 @@
+<%-include('base')%>
+
+
+<form action="add_car" method="post">
+
+    <div class="mb-3">
+      <label for="model">Model:</label>
+      <input type="text" name="model"  id="model" required/>
+    </div>
+    <div class="mb-3">
+      <label for="company">Company:</label>
+      <select name="companies" id="companies">
+        <option value="Ford">Ford</option>
+        <option value="Honda">Honda</option>
+        <option value="Toyota">Toyota</option>
+        <option value="Citroen">Citroen</option>
+      </select>
+      
+    </div>
+    <div class="mb-3">
+      <label for="year">Year:</label>
+      <input type="text" name="year"  id="year" required/>
+    </div>
+    <div class="mb-3">
+      <button class="btn btn-outline-secondary" type="submit">Submit</button>
+    </div>
+
+</form>
