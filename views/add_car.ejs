@@ -1,7 +1,7 @@
 <%-include('base')%>
 
 
-<form action="add_car" method="post">
+<form action="add_car" method="POST">
 
     <div class="mb-3">
       <label for="model">Model:</label>
@@ -9,7 +9,8 @@
     </div>
     <div class="mb-3">
       <label for="company">Company:</label>
-      <select name="companies" id="companies">
+      <select name="companies" id="companies" required>
+        <option>----</option>
         <option value="Ford">Ford</option>
         <option value="Honda">Honda</option>
         <option value="Toyota">Toyota</option>

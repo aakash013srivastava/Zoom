@@ -1,3 +1,17 @@
 <%-include('base')%>
 
 Welcome <strong><%=user_id%></strong>
+
+
+<table class="table table-striped" border="1">
+    <th>Car Details:Listing owner</th><th>Query</th>
+    <%for(let x=0;x < listings.length;x++){%>
+    <form action="query">
+        <tr><%if(listings[x]){%>
+        <td><%=listings[x]%></td>
+        <td><input type="hidden" name="hidden" value="<%=listings[x]%>"/>
+            <input type="submit" name="query" value="query"/></td>
+        <%}%></tr>
+    </form>
+    <%}%>
+</table>

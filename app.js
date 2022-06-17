@@ -12,7 +12,7 @@ let storage = multer.diskStorage({
         cb(null,'./static/uploads/')
     },
     filename:function(req,file,cb){
-        cb(null,Date.now()+file.originalname)
+        cb(null,req.session.user_id+"_"+Date.now()+"_"+file.originalname)
     }
 })
 
@@ -59,11 +59,28 @@ app.use(sessions({
 }));
 
 app.get('/',(req,res)=>{
-    
-    res.render("index.ejs",{user_id:req.session.user_id})
+    fs.readFile('listings.txt','utf-8',(err,data)=>{
+        const lines = data.split('\n')
+
+        res.render("index.ejs",{user_id:req.session.user_id,listings:lines})
+    })
+})
+
+
+
+app.get('/query',(req,res)=>{
+    // fs.readFile
+    console.log(req.body.hidden);
+    res.render("query.ejs",{user_id:req.session.user_id,query:req.body.hidden})
+})
+
+app.post('/query',(req,res)=>{
+    console.log(req.body.query_item);
+    res.render('thanks.ejs',{user_id:req.session.user_id})
 })
 
 app.get('/register',(req,res)=>{
+
     res.render("register.ejs",{user_id:null})
 })
 
@@ -152,7 +169,8 @@ app.post('/login',(req,res)=>{
     if(!flag){
         req.session.user_id = email
         console.log(req.session.user_id);
-        res.render('index.ejs',{user_id:req.session.user_id})
+        // res.render('index.ejs',{user_id:req.session.user_id})
+        res.redirect('/')
     }else{
 
         res.redirect("/register")
@@ -171,14 +189,19 @@ app.get('/add_car',(req,res)=>{
 })
 
 
-app.post('/add_car',upload.single('filename'),(req,res,next)=>{
+app.post('/add_car',(req,res)=>{
     
-    if(request.file){
-        const pathname = req.file.path
-        res.send(req.file,pathName)
-    }
-    
+    const model = req.body.model
+    const company = req.body.companies
+    const year = req.body.year
 
+    fs.appendFile('listings.txt',`${model}-${company}-${year}:${req.session.user_id}`+"\n",(err,data)=>{
+        if(err){
+            console.log(err);
+        }else{
+            console.log(data);
+        }
+    })
 })
 
 
