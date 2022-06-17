@@ -9,8 +9,7 @@ Welcome <strong><%=user_id%></strong>
     <form action="query">
         <tr><%if(listings[x]){%>
         <td><%=listings[x]%></td>
-        <td><input type="hidden" name="hidden" value="<%=listings[x]%>"/>
-            <input type="submit" name="query" value="query"/></td>
+        <td><button type="submit" name="query" value="<%=listings[x]%>"/>Query</button></td>
         <%}%></tr>
     </form>
     <%}%>

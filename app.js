@@ -70,8 +70,8 @@ app.get('/',(req,res)=>{
 
 app.get('/query',(req,res)=>{
     // fs.readFile
-    console.log(req.body.hidden);
-    res.render("query.ejs",{user_id:req.session.user_id,query:req.body.hidden})
+    console.log(req.body.hiddenfield);
+    res.render("query.ejs",{user_id:req.session.user_id,query:req.body.hiddenfield})
 })
 
 app.post('/query',(req,res)=>{
