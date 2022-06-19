@@ -3,38 +3,12 @@ const cookieParser = require("cookie-parser");
 const sessions = require('express-session');
 const bodyParser= require("body-parser")
 const fs = require('fs')
+const mongoose = require('mongoose')
+
+// const connection = require('./db')
 let bcrypt = require('bcrypt');
-let multer = require('multer');
-const { request } = require("http");
-
-let storage = multer.diskStorage({
-    destination:function(req,file,cb){
-        cb(null,'./static/uploads/')
-    },
-    filename:function(req,file,cb){
-        cb(null,req.session.user_id+"_"+Date.now()+"_"+file.originalname)
-    }
-})
-
-const fileFilter = (req,file,cb)=>{
-    if(file.mimetype==='image/jpeg'||file.mimetype==='image/jpg'||file.mimetype==='image/png'){
-        cb(null,true)
-    }else{
-        cb(null,false)
-    }
-}
-
-let upload = multer({
-    storage:storage,
-    fileFilter:fileFilter
-})
-
 const saltRounds = 10;
 app = express()
-
-
-
-
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -66,18 +40,48 @@ app.get('/',(req,res)=>{
     })
 })
 
-
-
-app.get('/query',(req,res)=>{
-    // fs.readFile
-    console.log(req.body.hiddenfield);
-    res.render("query.ejs",{user_id:req.session.user_id,query:req.body.hiddenfield})
+app.post('/',(req,res)=>{
+    console.log(req.body.listing);
+    res.render('query.ejs',{user_id:req.session.user_id,query:req.body.listing})
 })
+
+// app.get('/query',(req,res)=>{
+//     // fs.readFile
+//     // console.log(req.body.listing);
+//     res.render("query.ejs",{user_id:req.session.user_id,query:req.body.listing})
+// })
 
 app.post('/query',(req,res)=>{
-    console.log(req.body.query_item);
-    res.render('thanks.ejs',{user_id:req.session.user_id})
+    console.log(req.body.listing);
+
+    // Add query to db
+    fs.appendFile('query.txt',`email:${req.body.email},contact:${req.body.contact},query_item:${req.body.query_item}\n`,(err,file)=>{
+        if(err){
+            res.send("Query not Created")
+        }
+        else{
+            res.redirect('/')
+        }
+    })
+
+    
 })
+
+
+// List the queries made by the logged in user
+app.get('/queries',(req,res)=>{
+    fs.readFile('query.txt','utf-8',(err,data)=>{
+        if(data){
+            const lines = data.split('\n')
+            res.render('my_queries.ejs',{user_id:req.session.user_id,queries:lines})
+        }else{
+            console.log(err);
+            res.redirect('/')
+        }
+    })
+    
+})
+
 
 app.get('/register',(req,res)=>{
 
@@ -141,7 +145,7 @@ app.post('/login',(req,res)=>{
     const password = req.body.password
     let flag = false
 
-    // check if user i  present in the user db
+    // check if user is  present in the user db
     fs.readFile('users.txt','utf-8',(err,data)=>{
         if(data){
             const lines = data.split('\n')
@@ -154,11 +158,11 @@ app.post('/login',(req,res)=>{
                     cur_email = cur_user.substring(6,cur_user.length);
                     const cur_pass = (user[1])
                     cur_password = cur_pass.substring(9,cur_pass.length);
-                    const verified = bcrypt.compareSync(password, cur_password);
+                    const verified = bcrypt.compare(password, cur_password);
                     if(email == cur_email && verified){
                         
                         flag = true
-                        console.log("found");
+                        // console.log("found");
                     }
                 }
             }
@@ -200,6 +204,7 @@ app.post('/add_car',(req,res)=>{
             console.log(err);
         }else{
             console.log(data);
+            res.redirect('/')
         }
     })
 })

@@ -6,10 +6,10 @@ Welcome <strong><%=user_id%></strong>
 <table class="table table-striped" border="1">
     <th>Car Details:Listing owner</th><th>Query</th>
     <%for(let x=0;x < listings.length;x++){%>
-    <form action="query">
+    <form action="" method="POST">
         <tr><%if(listings[x]){%>
-        <td><%=listings[x]%></td>
-        <td><button type="submit" name="query" value="<%=listings[x]%>"/>Query</button></td>
+        <td><input type="text" name="listing" value="<%=listings[x]%>" size="50" readonly/></td>
+        <td><button type="submit" name="query_car"/>Query</button></td>
         <%}%></tr>
     </form>
     <%}%>

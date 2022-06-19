@@ -1,6 +1,6 @@
 <%-include('base')%>
 
-
+<%if(user_id){%>
 <form action="add_car" method="POST">
 
     <div class="mb-3">
@@ -27,3 +27,8 @@
     </div>
 
 </form>
+<%}else{%>
+
+  <strong>Login First</strong>
+
+<%}%>

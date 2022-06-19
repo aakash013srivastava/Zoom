@@ -1,0 +1,21 @@
+<%-include('base')%>
+<%if(user_id){%>
+<strong><%=user_id%></strong> pending queries for approval
+
+
+<table class="table table-striped" border="1">
+    <th>Car Details with query email:Listing owner</th>
+    <%for(let x=0;x < queries.length;x++){%>
+    <!-- <form action="" method="POST"> -->
+        <tr><%if(queries[x]){%>
+        <td><input type="text" name="listing" value="<%=queries[x]%>" size="120" readonly/></td>
+        <%}%></tr>
+    <!-- </form> -->
+    <%}%>
+</table>
+
+<%}else{%>
+
+    <strong>Login First</strong>
+
+<%}%>
