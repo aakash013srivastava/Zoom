@@ -2,7 +2,7 @@ const express =require("express")
 const cookieParser = require("cookie-parser");
 const sessions = require('express-session');
 const bodyParser= require("body-parser")
-const fs = require('fs')
+const fs = require('fs').promises
 const mongoose = require('mongoose')
 
 // const connection = require('./db')
@@ -32,12 +32,12 @@ app.use(sessions({
     resave: false 
 }));
 
-app.get('/',(req,res)=>{
-    fs.readFile('listings.txt','utf-8',(err,data)=>{
+app.get('/',async(req,res)=>{
+    const data = await fs.readFile('listings.txt','utf-8')
         const lines = data.split('\n')
 
         res.render("index.ejs",{user_id:req.session.user_id,listings:lines})
-    })
+    
 })
 
 app.post('/',(req,res)=>{
@@ -51,11 +51,11 @@ app.post('/',(req,res)=>{
 //     res.render("query.ejs",{user_id:req.session.user_id,query:req.body.listing})
 // })
 
-app.post('/query',(req,res)=>{
+app.post('/query',async(req,res)=>{
     console.log(req.body.listing);
 
     // Add query to db
-    fs.appendFile('query.txt',`email:${req.body.email},contact:${req.body.contact},query_item:${req.body.query_item}\n`,(err,file)=>{
+    await fs.appendFile('query.txt',`email:${req.body.email},contact:${req.body.contact},query_item:${req.body.query_item}\n`,(err,file)=>{
         if(err){
             res.send("Query not Created")
         }
@@ -69,8 +69,8 @@ app.post('/query',(req,res)=>{
 
 
 // List the queries made by the logged in user
-app.get('/queries',(req,res)=>{
-    fs.readFile('query.txt','utf-8',(err,data)=>{
+app.get('/queries',async (req,res)=>{
+    const data = await fs.readFile('query.txt','utf-8')
         if(data){
             const lines = data.split('\n')
             res.render('my_queries.ejs',{user_id:req.session.user_id,queries:lines})
@@ -78,7 +78,7 @@ app.get('/queries',(req,res)=>{
             console.log(err);
             res.redirect('/')
         }
-    })
+    
     
 })
 
@@ -90,42 +90,45 @@ app.get('/register',(req,res)=>{
 
 // Register a new user
 
-app.post('/register',(req,res)=>{
+app.post('/register',async(req,res)=>{
     const email = req.body.email
     const password = req.body.password
-    let flag = false
+    let flag = false //user does not exist in db
 
     // check if user not already present
-    fs.readFile('users.txt','utf-8',(err,data)=>{
-        if(data){
-            const lines = data.split('\n')
-            for(let x =0;x<lines.length;x++){
-                const user = (lines[x]).split(',')
-                const cur_user = (user[0])
-                cur_email = cur_user.substring(6,cur_user.length);
-                
-                if(email == cur_email){
-                    flag = true
+    const data = await fs.readFile('users.txt', 'utf-8')
+        if (data) {
+            const lines = data.split('\n');
+            // console.log(lines);
+            for (let x = 0; x < lines.length; x++) {
+                if (lines[x]) {
+
+                    const user = (lines[x]).split(',');
+                    // console.log(user);
+                    const cur_user = (user[0]);
+                    cur_email = cur_user.substring(6, cur_user.length);
+                    if (email == cur_email) {
+                        flag = true; // user already present in db          
+                        console.log("user found");
+                    } else {
+                        continue;
+                    }
                 }
             }
-            
-
         }
-    })
-
+    
+    console.log(flag);
     // if user is not present in db
-    if(flag){
+    if(!flag){
         //create hash of user password
         const passwordHash = bcrypt.hashSync(password, 10);
 
         // Add user to db
-        fs.appendFile('users.txt',`email:${email},password:${passwordHash}\n`,(err,file)=>{
-            if(err)
-            res.send("User not Created")
-            else
-            res.redirect('/login')
-        })
-    }else{
+        await fs.appendFile('users.txt',`email:${email},password:${passwordHash}\n`)
+        res.redirect('/login')
+        
+    }
+    else{ // user present in db
         res.send("User already exists")
     }
 })
@@ -140,45 +143,40 @@ app.get('/login',(req,res)=>{
 })
 
 
-app.post('/login',(req,res)=>{
-    const email = req.body.email
-    const password = req.body.password
-    let flag = false
-
+app.post('/login', async(req,res)=>{
+    
     // check if user is  present in the user db
-    fs.readFile('users.txt','utf-8',(err,data)=>{
-        if(data){
-            const lines = data.split('\n')
+    const data = await fs.readFile('users.txt', 'utf-8')
+        if (data) {
+            const email = req.body.email;
+            const password = req.body.password;
+            let flag = true;
+
+            const lines = data.split('\n');
             // check if user present in users db line by line
-            for(let x =0;x<lines.length;x++){
-                if(lines[x]){
-                    
-                    const user = (lines[x]).split(',')
-                    const cur_user = (user[0])
-                    cur_email = cur_user.substring(6,cur_user.length);
-                    const cur_pass = (user[1])
-                    cur_password = cur_pass.substring(9,cur_pass.length);
-                    const verified = bcrypt.compare(password, cur_password);
-                    if(email == cur_email && verified){
-                        
-                        flag = true
-                        // console.log("found");
+            for (let x = 0; x < lines.length; x++) {
+                if (lines[x]) {
+
+                    const user = (lines[x]).split(',');
+                    const cur_user = (user[0]);
+                    const cur_email = cur_user.substring(6, cur_user.length);
+                    const cur_pass = (user[1]);
+                    const cur_password = cur_pass.substring(9, cur_pass.length);
+                    const verified = await bcrypt.compare(password, cur_password);
+                    if (verified) {
+                        req.session.user_id = email;
+                        res.redirect('/');
+                    } else if (cur_email) {
+                        res.redirect('/login');
+                    } else {
+                        res.redirect("/register");
                     }
                 }
             }
-            
 
         }
-    })
-    if(!flag){
-        req.session.user_id = email
-        console.log(req.session.user_id);
-        // res.render('index.ejs',{user_id:req.session.user_id})
-        res.redirect('/')
-    }else{
-
-        res.redirect("/register")
-    }
+    
+    
 })
 
 

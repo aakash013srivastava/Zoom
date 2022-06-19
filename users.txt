@@ -1,3 +1,3 @@
-email:aakash@mail.com,password:$2b$10$waXrRvTVFYvAzOYaFuBfc.1QJx3VbRTqW8aKGIFqXxINTeJsNF7mm
-email:aakash013srivastava@gmail.com,password:$2b$10$IRrND2EC6H5CZrLQ3gp5dekJ4r4NsYXNWW5amYeHXR3poDlj9IqEC
-email:aakash013srivastava@gmail.com,password:$2b$10$Wchw.STbe/XkQPeEcEKvquYEiI1KFPPbIq8w6EY88KI7wdJQ7aLlS
+email:aakash013srivastava@gmail.com,password:$2b$10$VYLcAN6walCRNH3BCPaf9uVdajA9/cveplYpfGwjiAPzKp7yMhCe2
+email:abc@gmail.com,password:$2b$10$j8NEMOWlqmthf0q77lDtXuGbI1pcePKqxLNAS97miTYyWxtERs7hi
+email:xc@d.com,password:$2b$10$FEi/p73REFz57BCrK7XZXeFZFRAI281M0MiSMaaORog.6GW7Dy7Om
