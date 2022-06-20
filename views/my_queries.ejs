@@ -4,11 +4,11 @@
 
 
 <table class="table table-striped" border="1">
-    <th>Car Details with query email:Listing owner</th>
+    <th>Car Details with query email,contact:query_Item(Listing owner)</th>
     <%for(let x=0;x < queries.length;x++){%>
     <!-- <form action="" method="POST"> -->
         <tr><%if(queries[x]){%>
-        <td><input type="text" name="listing" value="<%=queries[x]%>" size="120" readonly/></td>
+        <td><input type="text" name="listing" value="<%=queries[x]%>" size="100" readonly/></td>
         <%}%></tr>
     <!-- </form> -->
     <%}%>
