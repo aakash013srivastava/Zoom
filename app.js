@@ -3,7 +3,7 @@ const cookieParser = require("cookie-parser");
 const sessions = require('express-session');
 const bodyParser= require("body-parser")
 const fs = require('fs').promises
-const mongoose = require('mongoose')
+
 
 // const connection = require('./db')
 let bcrypt = require('bcrypt');
@@ -139,7 +139,7 @@ app.get('/about',(req,res)=>{
 })
 
 app.get('/login',(req,res)=>{
-    res.render('login.ejs',{user_id:req.session.user_id})
+    res.render('login.ejs',{user_id:req.session.user_id,password:req.query.password})
 })
 
 
@@ -167,7 +167,7 @@ app.post('/login', async(req,res)=>{
                         req.session.user_id = email;
                         res.redirect('/');
                     } else if (cur_email) {
-                        res.redirect('/login');
+                        res.redirect('/login?password=wrong\ password\ try\ again');
                     } else {
                         res.redirect("/register");
                     }
