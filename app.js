@@ -3,7 +3,7 @@ const cookieParser = require("cookie-parser");
 const sessions = require('express-session');
 const bodyParser= require("body-parser")
 const fs = require('fs').promises
-
+const nodemailer = require('nodemailer');
 
 // const connection = require('./db')
 let bcrypt = require('bcrypt');
@@ -80,6 +80,34 @@ app.get('/queries',async (req,res)=>{
         }
     
     
+})
+
+
+app.post('/mail_approval',(req,res)=>{
+    const listing = req.body.listing
+    const query_email = (listing.split(',')[0])
+    const query_item = (listing.split(',')[2])
+    const to = query_email.substring(6,query_email.length)
+    const from = "email here"
+    const msg = query_item
+    const subject = "Zoom cars buy approval"
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: secure_configuration.EMAIL_USERNAME,
+          pass: secure_configuration.PASSWORD
+        }
+      });
+    const mailConfigurations = {to,from,subject,msg}
+
+    transporter.sendMail(mailConfigurations, function(error, info){
+        if (error) throw Error(error);
+           console.log('Email Sent Successfully');
+        console.log(info);
+    });
+
+    res.redirect('/queries?msg=success')
 })
 
 
