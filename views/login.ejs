@@ -1,5 +1,10 @@
 <%-include('base')%>
-<strong>Login</strong>
+<STRONG>
+<%if(password){%>
+  <%=password%>
+  <%}%>
+</STRONG>
+<p><strong>Login</strong></p>
 <form method="POST" action="login">
     <div class="mb-3">
       <label for="exampleInputEmail1" class="form-label">Email address</label>
